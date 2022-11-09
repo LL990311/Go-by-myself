@@ -1,4 +1,4 @@
-// echo1 输出其命令行函数
+// echo 输出其命令行函数
 package main
 
 import (
