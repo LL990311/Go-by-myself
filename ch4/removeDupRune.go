@@ -11,10 +11,14 @@ func removeDupRune(arr []byte) []byte {
 	for i := 0; i < len(arr); {
 		first, size := utf8.DecodeRune(arr[i:])
 		if unicode.IsSpace(first) {
-			second, _ := utf8.DecodeRune(arr[i+size:])
-			if unicode.IsSpace(second) {
-				copy(arr[i:], arr[i+size:])
-				arr = arr[:len(arr)-size]
+			for len(arr) > 0 {
+				second, _ := utf8.DecodeRune(arr[i+size:])
+				if unicode.IsSpace(second) {
+					copy(arr[i:], arr[i+size:])
+					arr = arr[:len(arr)-size]
+				} else {
+					break
+				}
 			}
 		}
 		i += size
@@ -23,7 +27,7 @@ func removeDupRune(arr []byte) []byte {
 }
 
 func main() {
-	arr := []byte("哈哈哈哈    哈哈  嘿嘿 哈哈")
+	arr := []byte("哈哈     哈哈     哈哈     嘿      嘿      哈哈")
 	arr = removeDupRune(arr)
 	fmt.Printf("%s\n", arr)
 }
