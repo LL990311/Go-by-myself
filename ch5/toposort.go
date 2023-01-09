@@ -27,6 +27,9 @@ func main() {
 	for i, course := range topoSort(prereqs) {
 		fmt.Printf("%d:\t%s\n", i+1, course)
 	}
+	for i, course := range topoSortMap(prereqs) {
+		fmt.Printf("%d:\t%s\n", i+1, course)
+	}
 }
 
 func topoSort(m map[string][]string) []string {
@@ -39,6 +42,29 @@ func topoSort(m map[string][]string) []string {
 				seen[item] = true
 				visitAll(m[item])
 				order = append(order, item)
+			}
+		}
+	}
+	var keys []string
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	visitAll(keys)
+	return order
+}
+
+//ex5.10
+func topoSortMap(m map[string][]string) map[int]string {
+	order := make(map[int]string)
+	seen := make(map[string]bool)
+	var visitAll func(item []string)
+	visitAll = func(items []string) {
+		for _, item := range items {
+			if !seen[item] {
+				seen[item] = true
+				visitAll(m[item])
+				order[len(order)] = item
 			}
 		}
 	}
