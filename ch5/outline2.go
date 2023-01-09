@@ -39,6 +39,7 @@ func outline2(node *html.Node, start, end func(node *html.Node)) {
 	}
 }
 
+//ex 5.12
 var depth int
 
 //func startElement(n *html.Node) {
