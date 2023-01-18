@@ -149,7 +149,7 @@ func (s *IntSet) DifferentiateWith(t *IntSet) {
 */
 func (s *IntSet) SymDifferentiateWith(t *IntSet) {
 	sLen := len(s.words)
-	var i = 0
+	i := 0
 	for ; i < sLen; i++ {
 		if i < len(t.words) {
 			s.words[i] ^= t.words[i]
@@ -163,24 +163,29 @@ func (s *IntSet) SymDifferentiateWith(t *IntSet) {
 
 }
 
-func _max(x, y int) int {
-	if x > y {
-		return x
-	} else {
-		return y
+//ex 6.4
+func (s *IntSet) Elems() []int {
+	var elems []int
+	for i, word := range s.words {
+		for j := 0; j < 64; j++ {
+			if word&(1<<j) != 0 {
+				elems = append(elems, i*64+j)
+			}
+		}
 	}
+	return elems
 }
 
 func main() {
 	var x, y IntSet
-	x.AddAll(1, 4, 3)
+	x.AddAll(1, 4, 3, 144)
 	y.AddAll(1, 2)
-
-	fmt.Println(x.String())
-	fmt.Println(y.String())
 
 	x.UnionWith(&y)
 
-	fmt.Println(x.String())
+	elems := x.Elems()
+	for _, elem := range elems {
+		fmt.Printf("%d \n", elem)
+	}
 
 }
