@@ -87,21 +87,22 @@ func (s *IntSet) Copy() *IntSet {
 	return n
 }
 
+//ex 6.2
+func (s *IntSet) AddAll(n ...int) {
+	for _, x := range n {
+		word, bit := x/64, x%64
+		for word >= len(s.words) {
+			s.words = append(s.words, 0)
+		}
+		s.words[word] |= 1 << bit
+	}
+}
+
 func main() {
 	var x IntSet
-	x.Add(1)
-	x.Add(144)
-	x.Add(9)
-	x.Add(199)
+	x.AddAll(1, 5, 9, 144)
 
 	fmt.Println(x.Len())
 
-	n := x.Copy()
-	fmt.Println(n.Len())
-
-	n.Add(5)
-
 	fmt.Println(x.String())
-	fmt.Println(n.String())
-
 }
