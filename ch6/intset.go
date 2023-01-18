@@ -22,16 +22,6 @@ func (s *IntSet) Add(x int) {
 	s.words[word] |= 1 << bit
 }
 
-func (s *IntSet) UnionWith(t *IntSet) {
-	for i, tword := range t.words {
-		if i < len(s.words) {
-			s.words[i] |= tword
-		} else {
-			s.words = append(s.words, tword)
-		}
-	}
-}
-
 func (s *IntSet) String() string {
 	var buf bytes.Buffer
 	buf.WriteByte('{')
@@ -98,11 +88,43 @@ func (s *IntSet) AddAll(n ...int) {
 	}
 }
 
-func main() {
-	var x IntSet
-	x.AddAll(1, 5, 9, 144)
+func (s *IntSet) UnionWith(t *IntSet) {
+	for i, tword := range t.words {
+		if i < len(s.words) {
+			s.words[i] |= tword
+		} else {
+			s.words = append(s.words, tword)
+		}
+	}
+}
 
-	fmt.Println(x.Len())
+//ex 6.3
+func (s *IntSet) Intersection(t *IntSet) {
+	minLen := _min(len(s.words), len(t.words))
+	for i := 0; i < minLen; i++ {
+		s.words[i] &= t.words[i]
+	}
+	s.words = s.words[:minLen]
+}
+
+func _min(x, y int) int {
+	if x < y {
+		return x
+	} else {
+		return y
+	}
+}
+
+func main() {
+	var x, y IntSet
+	x.AddAll(1, 5, 9, 144)
+	y.AddAll(1, 9, 7, 6, 5)
 
 	fmt.Println(x.String())
+	fmt.Println(y.String())
+
+	x.Intersection(&y)
+
+	fmt.Println(x.String())
+
 }
