@@ -88,6 +88,11 @@ func (s *IntSet) AddAll(n ...int) {
 	}
 }
 
+/*
+ 10110
+ 11000
+ 11110
+*/
 func (s *IntSet) UnionWith(t *IntSet) {
 	for i, tword := range t.words {
 		if i < len(s.words) {
@@ -99,7 +104,12 @@ func (s *IntSet) UnionWith(t *IntSet) {
 }
 
 //ex 6.3
-func (s *IntSet) Intersection(t *IntSet) {
+/*
+ 10111
+ 00101
+ 00101
+*/
+func (s *IntSet) IntersectionWith(t *IntSet) {
 	minLen := _min(len(s.words), len(t.words))
 	for i := 0; i < minLen; i++ {
 		s.words[i] &= t.words[i]
@@ -115,15 +125,61 @@ func _min(x, y int) int {
 	}
 }
 
+/*
+ 11101
+ 10011
+ 01100
+*/
+func (s *IntSet) DifferentiateWith(t *IntSet) {
+	for i := 0; i < len(s.words); i++ {
+		if i < len(t.words) {
+			temp := s.words[i]
+			s.words[i] ^= t.words[i]
+			s.words[i] &= temp
+		} else {
+			return
+		}
+	}
+}
+
+/*
+ 11111
+ 01001
+ 10110
+*/
+func (s *IntSet) SymDifferentiateWith(t *IntSet) {
+	sLen := len(s.words)
+	var i = 0
+	for ; i < sLen; i++ {
+		if i < len(t.words) {
+			s.words[i] ^= t.words[i]
+		} else {
+			return
+		}
+	}
+	for ; i < len(t.words); i++ {
+		s.words = append(s.words, t.words[i])
+	}
+
+}
+
+func _max(x, y int) int {
+	if x > y {
+		return x
+	} else {
+		return y
+	}
+}
+
 func main() {
 	var x, y IntSet
-	x.AddAll(1, 5, 9, 144)
-	y.AddAll(1, 9, 7, 6, 5)
+	x.AddAll(1, 4, 3)
+	y.AddAll(1, 2)
 
 	fmt.Println(x.String())
 	fmt.Println(y.String())
 
-	x.Intersection(&y)
+	x.UnionWith(&y)
 
 	fmt.Println(x.String())
 
