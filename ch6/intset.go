@@ -5,17 +5,23 @@ import (
 	"fmt"
 )
 
+/*
+	ex6.5
+	a tricky way to determine whether 32-bits or 64-bits computer
+*/
+const uintSize = 32 << (^uint(0) >> 63)
+
 type IntSet struct {
-	words []uint64
+	words []uint
 }
 
 func (s *IntSet) Has(x int) bool {
-	word, bit := x/64, uint(x%64)
+	word, bit := x/uintSize, uint(x%uintSize)
 	return word < len(s.words) && s.words[word]&(1<<bit) != 0
 }
 
 func (s *IntSet) Add(x int) {
-	word, bit := x/64, uint(x%64)
+	word, bit := x/uintSize, uint(x%uintSize)
 	for word >= len(s.words) {
 		s.words = append(s.words, 0)
 	}
@@ -29,12 +35,12 @@ func (s *IntSet) String() string {
 		if word == 0 {
 			continue
 		}
-		for j := 0; j < 64; j++ {
+		for j := 0; j < uintSize; j++ {
 			if word&(1<<uint(j)) != 0 {
 				if buf.Len() > len("{") {
 					buf.WriteByte(' ')
 				}
-				fmt.Fprintf(&buf, "%d", 64*i+j)
+				fmt.Fprintf(&buf, "%d", uintSize*i+j)
 			}
 		}
 	}
@@ -46,7 +52,7 @@ func (s *IntSet) String() string {
 func (s *IntSet) Len() int {
 	cnt := 0
 	for _, word := range s.words {
-		for mask := 0; mask < 64; mask++ {
+		for mask := 0; mask < uintSize; mask++ {
 			if word&(1<<mask) != 0 {
 				cnt++
 			}
@@ -57,7 +63,7 @@ func (s *IntSet) Len() int {
 
 //ex 6.1
 func (s *IntSet) Remove(x int) {
-	word, bit := x/64, x%64
+	word, bit := x/uintSize, x%uintSize
 	if word > len(s.words) {
 		return
 	}
@@ -72,7 +78,7 @@ func (s *IntSet) Clear() {
 //ex 6.1
 func (s *IntSet) Copy() *IntSet {
 	n := &IntSet{}
-	n.words = make([]uint64, len(s.words))
+	n.words = make([]uint, len(s.words))
 	copy(n.words, s.words)
 	return n
 }
@@ -80,7 +86,7 @@ func (s *IntSet) Copy() *IntSet {
 //ex 6.2
 func (s *IntSet) AddAll(n ...int) {
 	for _, x := range n {
-		word, bit := x/64, x%64
+		word, bit := x/uintSize, x%uintSize
 		for word >= len(s.words) {
 			s.words = append(s.words, 0)
 		}
@@ -167,9 +173,9 @@ func (s *IntSet) SymDifferentiateWith(t *IntSet) {
 func (s *IntSet) Elems() []int {
 	var elems []int
 	for i, word := range s.words {
-		for j := 0; j < 64; j++ {
+		for j := 0; j < uintSize; j++ {
 			if word&(1<<j) != 0 {
-				elems = append(elems, i*64+j)
+				elems = append(elems, i*uintSize+j)
 			}
 		}
 	}
@@ -182,6 +188,16 @@ func main() {
 	y.AddAll(1, 2)
 
 	x.UnionWith(&y)
+	fmt.Println(x.String())
+
+	x.IntersectionWith(&y)
+	fmt.Println(x.String())
+
+	x.DifferentiateWith(&y)
+	fmt.Println(x.String())
+
+	x.SymDifferentiateWith(&y)
+	fmt.Println(x.String())
 
 	elems := x.Elems()
 	for _, elem := range elems {
